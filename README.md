@@ -7,6 +7,7 @@
 很多人非常想学习 C 语言，但却无从下手。现在大可不必担心了。如果你能坚持看完本书，我敢保证，至少你将拥有一个非常酷的新语言可以把玩，说不定还能成为一个熟练的 C 程序员呢！
 
 - 原作者：Daniel Holden (contact@theorangeduck.com)
-- 原书地址：[http://buildyourownlisp.com/](http://buildyourownlisp.com/)
+- 原书阅读地址：[http://buildyourownlisp.com/](http://buildyourownlisp.com/)
+- 原书 Github 主页：[BuildYourOwnLisp](https://github.com/orangeduck/BuildYourOwnLisp)
 - 译者：KSCO (numbksco@gmail.com)
 - 共享协议：[CC BY-NC-SA 3.0](http://creativecommons.org/licenses/by-nc-sa/3.0/)
