@@ -17,5 +17,3 @@
 * [第十五章 • 标准库](Standard Library.md)
 * [第十六章 • 彩蛋](Bonus Projects.md)
 * [第十七章 • 附录](Appendix.md)
-    * [FAQ](FAQ.md)
-    * [Github](https://github.com/ksco/BuildYourOwnLispCn)
