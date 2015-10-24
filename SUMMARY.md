@@ -1,5 +1,5 @@
 # 目录 • Build Your Own Lisp
-- [第零一章 • 关于](README.md)
+- [第零零章 • 关于](README.md)
 - [第零一章 • 介绍](Introduction.md)
 - [第零二章 • 安装](Installation.md)
 - [第零三章 • 基础](Basics.md)
