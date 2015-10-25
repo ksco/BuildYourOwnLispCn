@@ -9,5 +9,5 @@
 - 原书 Github 主页：[BuildYourOwnLisp](https://github.com/orangeduck/BuildYourOwnLisp)
 - 译者：KSCO (numbksco@gmail.com)
 - 中文版阅读地址：https://ksco.gitbooks.io/build-your-own-lisp/
-- 中文版 Github 主页：[BuildYourOwnLispCn](https://github.com/ksco/BuildYourOwnLispCn\)
+- 中文版 Github 主页：[BuildYourOwnLispCn](https://github.com/ksco/BuildYourOwnLispCn)
 - 共享协议：[CC BY-NC-SA 3.0](http://creativecommons.org/licenses/by-nc-sa/3.0/)
