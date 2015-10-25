@@ -36,3 +36,16 @@
     Apple LLVM version 7.0.0 (clang-700.1.76)
     Target: x86_64-apple-darwin15.0.0
     Thread model: posix
+
+## Hello World
+
+至此，环境搭建工作已经完成了。现在打开你的代码编辑器，将下方的代码输入到其中。新建一个文件夹，用于存放你接下来跟随本书编写的代码。并把刚刚的代码保存到这个文件夹中，起名为 `hello_world.c`。这就是你的第一个 C 程序！
+
+    #include <stdio.h>
+
+    int main(int argc, char** argv) {
+      puts("Hello, world!");
+      return 0;
+    }
+
+接下来我会一行一行的解释这个程序。
