@@ -88,14 +88,16 @@ int main(int argc, char** argv) {
 
 *在参考部分，我通常会给出这章中用到的代码作为总览。如果你自己写的程序遇到了错误，请不要把我写的代码简单的拷贝进去就完事了。一定要自己尝试着找出错误，并解决它。*
 
-#### `hello_world.c`
+`hello_world.c`
 
-    #include <stdio.h>
+```c
+#include <stdio.h>
 
-    int main(int argc, char** argv) {
-      puts("Hello, world!");
-      return 0;
-    }
+int main(int argc, char** argv) {
+  puts("Hello, world!");
+  return 0;
+}
+```
 
 ## 彩蛋
 
