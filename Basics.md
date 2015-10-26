@@ -22,11 +22,15 @@ C 中的每个变量都有一个特定的类型。这些类型可能是内建的
 
 如果要创建一个名为 `count` 的整数(`int`)，则可以这样写：
 
-    int count;
+```c
+int count;
+```
 
 如果要给 count 赋一个初始值：
 
-    int count = 10;
+```c
+int count = 10;
+```
 
 下面列出了 C 语言中一些内建的类型：
 
@@ -48,14 +52,18 @@ C 中的每个变量都有一个特定的类型。这些类型可能是内建的
 
 下面的代码演示了一个将两个 `int` 型变量 `x`，`y` 求和之后并返回的函数写法。
 
-    int add_together(int x, int y) {
-      int result = x + y;
-      return result;
-    }
+```c
+int add_together(int x, int y) {
+  int result = x + y;
+  return result;
+}
+```
 
 调用函数时，首先写上函数名，然后函数参数紧跟其后，包裹在一对圆括号里，参数之间用逗号分开。比如说，我们调用上面的函数，并将计算结果保存到 `added` 变量中：
 
-    int added = add_together(10, 18);
+```c
+int added = add_together(10, 18);
+```
 
 ## 结构体声明
 
@@ -63,18 +71,22 @@ C 中的每个变量都有一个特定的类型。这些类型可能是内建的
 
 我们可以使用结构体表示更加复杂的数据类型。例如，为了表示一个二维空间里的点，我们可以创建一个名为 `point` 的结构体将两个 `float` 类型的变量 `x`，`y` 绑在一起。我们可以同时使用 `struct` 和 `typedef` 来声明一个结构体：
 
-    typedef struct {
-      float x;
-      float y;
-    } point;
+```c
+typedef struct {
+  float x;
+  float y;
+} point;
+```
 
 注意，我们应该将结构体放在所有用到它的函数的上方。这个类型和内建的基本数据类型的用法没有任何区别。获取结构体内部的变量时，需要使用小数点 `.`，后面紧跟要获取的变量名：
 
-    point p;
-    p.x = 0.1;
-    p.y = 10.0;
-    
-    float length = sqrt(p.x * p.x + p.y * p.y);
+```c
+point p;
+p.x = 0.1;
+p.y = 10.0;
+
+float length = sqrt(p.x * p.x + p.y * p.y);
+```
     
 ## 指针
 
@@ -100,11 +112,13 @@ C 中的每个变量都有一个特定的类型。这些类型可能是内建的
 
 检测 x 是否在 10 到 100 之间的条件语句可以这样写：
 
-    if (x > 10 && x < 100) {
-      puts("x is greater than 10 and less than 100!");
-    } else {
-      puts("x is less than 11 or greater than 99!");
-    }
+```c
+if (x > 10 && x < 100) {
+  puts("x is greater than 10 and less than 100!");
+} else {
+  puts("x is less than 11 or greater than 99!");
+}
+```
 
 ## 循环
 
@@ -112,17 +126,21 @@ C 中的每个变量都有一个特定的类型。这些类型可能是内建的
 
 在 C 语言中有两种类型的循环。第一种是 `while` 循环。`while` 循环不断地执行一段代码，直到条件为假停止。首先 `while` 关键字在前，后面紧跟包裹在一对圆括号中的条件语句，最后是包裹在一对大括号中的待执行语句。下面是一个例子：
 
-    int i = 10;
-    while (i > 0) {
-      puts("Loop Iteration");
-      i = i - 1;
-    }
+```c
+int i = 10;
+while (i > 0) {
+  puts("Loop Iteration");
+  i = i - 1;
+}
+```
 
 第二种循环是 `for` 循环，跟 `while` 的条件语句不同的是，`for` 循环需要三个以 `;` 隔开的表达式：一个初始化语句，一个条件语句和一个递增语句。其中初始化语句在循环开始之前执行；条件语句每次迭代都会判断一次，如果为假，循环就退出了；递增语句在每次迭代的最后执行。`for` 循环通常用来计数，因为它的表示方法比 `while` 更加简洁。下面的例子中，我们从 0 递增到 9，每次加 1，共执行了 10 次：
-    
-    for (int i = 0; i < 10; i++) {
-      puts("Loop Iteration");
-    }
+
+```c
+for (int i = 0; i < 10; i++) {
+  puts("Loop Iteration");
+}
+```
 
 ## 福利
 
