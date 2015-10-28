@@ -106,7 +106,7 @@ lispy> hel^[[D^[[C
 
 如果你用的是 Windows 系统，你可以直接跳到本章的最后。因为接下来的几个小节都是和 `editline` 相关的内容。
 
-## 使用 Editline 库
+## 使用 editline 库
 
 我们会用到 `editline` 库提供的两个函数：`readline` 和 `add_history`。`readline` 和 `fgets` 一样，从命令行读取一行输入，并且允许用户使用左右箭头进行编辑。`add_history` 可以纪录下我们之前输入过的命令，并使用上下箭头来获取。新的程序如下所示：
 
@@ -150,7 +150,7 @@ int main(int argc, char** argv) {
 
 与 `fgets` 不同的是，`readline` 并不在结尾添加换行符。所以我们在 `printf` 函数中添加了一个换行符。另外，我们还需要使用 `free` 函数手动释放 `readline` 函数返回给我们的缓冲区 `input`。这是因为 `readline` 不同于 `fgets` 函数，后者使用已经存在的空间，而前者会申请一块新的内存，所以需要手动释放。内存的申请与释放问题我们还会在后面的章节中深入讨论。
 
-## 链接 Editline 并编译
+## 链接 editline 并编译
 
 如果你使用前面我们提供的命令行来编译这个程序，你会得到类似于下面的错误，因为在使用之前，你必须先在电脑上安装 `editline` 库。
 
