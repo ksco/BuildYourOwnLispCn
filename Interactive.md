@@ -167,6 +167,12 @@ undefined reference to `readline'
 undefined reference to `add_history'
 ```
 
+这意味着你没有将 `editline` 链接到你的程序中。你需要使用 `-ledit` 标记来完成链接，用法如下：
+
+`cc -std=c99 -Wall prompt.c -ledit -o prompt`
+
+再次运行程序，你就可以自由地编辑输入的文字了！
+
 ## 预处理器
 
 ## 参考
