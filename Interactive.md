@@ -108,7 +108,67 @@ lispy> hel^[[D^[[C
 
 ## 使用 Editline 库
 
+我们会用到 `editline` 库提供的两个函数：`readline` 和 `add_history`。`readline` 和 `fgets` 一样，从命令行读取一行输入，并且允许用户使用左右箭头进行编辑。`add_history` 可以纪录下我们之前输入过的命令，并使用上下箭头来获取。新的程序如下所示：
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+#include <editline/readline.h>
+#include <editline/history.h>
+
+int main(int argc, char** argv) {
+   
+  /* Print Version and Exit Information */
+  puts("Lispy Version 0.0.0.0.1");
+  puts("Press Ctrl+c to Exit\n");
+   
+  /* In a never ending loop */
+  while (1) {
+    
+    /* Output our prompt and get input */
+    char* input = readline("lispy> ");
+    
+    /* Add input to history */
+    add_history(input);
+    
+    /* Echo input back to user */    
+    printf("No you're a %s\n", input);
+
+    /* Free retrieved input */
+    free(input);
+    
+  }
+  
+  return 0;
+}
+```
+
+我们增加了一些新的头文件。`<stdlib.h>` 提供了 `free` 函数。`<editline/readline.h>` 和 `<editline/history.h>` 提供了 `editline` 库中的 `redaline` 和 `add_history` 函数。
+
+在上面的程序中，我们使用 `readline` 读取用户输入，使用 `add_history` 将该输入添加到历史纪录当中，最后使用 `printf` 将其加工并打印出来。
+
+与 `fgets` 不同的是，`readline` 并不在结尾添加换行符。所以我们在 `printf` 函数中添加了一个换行符。另外，我们还需要使用 `free` 函数手动释放 `readline` 函数返回给我们的缓冲区 `input`。这是因为 `readline` 不同于 `fgets` 函数，后者使用已经存在的空间，而前者会申请一块新的内存，所以需要手动释放。内存的申请与释放问题我们还会在后面的章节中深入讨论。
+
 ## 链接 Editline 并编译
+
+如果你使用前面我们提供的命令行来编译这个程序，你会得到类似于下面的错误，因为在使用之前，你必须先在电脑上安装 `editline` 库。
+
+`fatal error: editline/readline.h: No such file or directory #include <editline/readline.h>`
+
+在 Mac 上，`editline` 包含在 *Command Line Tools* 中，安装方法我们在第二章有说明。安装完后，可能还是会出现头文件不存在的编译错误。这时，可以移除 `#include <editline/history.h>` 这行代码，再试一次。
+
+在 Linux 上，可以使用 `sudo apt-get install libedit-dev` 来安装 `editline`。在 Fedora 上，使用 `su -c "yum install libedit-dev*"` 命令安装。
+
+一旦你安装好了 `editline`，你可以再次编译试一下。然后将会得到如下的错误：
+
+```
+undefined reference to `readline'
+undefined reference to `add_history'
+```
 
 ## 预处理器
 
+## 参考
+
+## 福利
