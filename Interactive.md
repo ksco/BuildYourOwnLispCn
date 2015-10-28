@@ -173,7 +173,72 @@ undefined reference to `add_history'
 
 再次运行程序，你就可以自由地编辑输入的文字了！
 
+> 为什么我的程序还是不能编译？
+
+*在有些系统上，`editline` 的安装、包含、链接的方式会有写差别，请善用搜索引擎。*
+
 ## 预处理器
+
+对于这样的一个小程序而言，我们针对不同的系统编写不同的代码是可以的。但是如果我把我的代码发给一个使用不同的操作系统的朋友，让他帮我完善一下代码，可能就会出问题了。理想情况下，我希望我的代码可以在任何操作系统上编译并运行。这在 C 语言中是个很普遍的问题，叫做可移植性(portability)。这通常都是个很棘手的问题。
+
+但是 C 提供了一个机制来帮助我们，叫做预处理器(preprocessor)。
+
+预处理器也是一个程序，它在编译之前运行。它有很多作用。而我们之前就已经悄悄地用过预处理器了。任何以井号 `#` 开头的语句都是一个预处理命令。为了使用标准库中的函数，我们已经用它来包含(include)过头文件了。
+
+预处理的另一个作用是检测当前的代码在哪个操作系统中运行，从而来产生平台相关的代码。而这也正是我们做可移植性工作时所需要的。
+
+在 Windows 上，我们可以伪造一个 `readline` 和 `add_history` 函数，而在其他系统上就使用 `editline` 库提供给我们的函数。
+
+为了达到这个目的，我们需要把平台相关的代码包在`#ifdef`、`#else` 和 `#endif` 预处理命令中。如果条件为真，包裹在 `#ifdef` 和 `#else` 之间的代码就会被执行，否则，`#else` 和 `endif` 之间的代码被执行。通过这个特性，我们就能写出在 Windows、Linux 和 Mac 三大平台上都能正确编译的代码了：
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+/* If we are compiling on Windows compile these functions */
+#ifdef _WIN32
+#include <string.h>
+
+static char buffer[2048];
+
+/* Fake readline function */
+char* readline(char* prompt) {
+  fputs(prompt, stdout);
+  fgets(buffer, 2048, stdin);
+  char* cpy = malloc(strlen(buffer)+1);
+  strcpy(cpy, buffer);
+  cpy[strlen(cpy)-1] = '\0';
+  return cpy;
+}
+
+/* Fake add_history function */
+void add_history(char* unused) {}
+
+/* Otherwise include the editline headers */
+#else
+#include <editline/readline.h>
+#include <editline/history.h>
+#endif
+
+int main(int argc, char** argv) {
+   
+  puts("Lispy Version 0.0.0.0.1");
+  puts("Press Ctrl+c to Exit\n");
+   
+  while (1) {
+    
+    /* Now in either case readline will be correctly defined */
+    char* input = readline("lispy> ");
+    add_history(input);
+
+    printf("No you're a %s\n", input);
+    free(input);
+    
+  }
+  
+  return 0;
+}
+```
 
 ## 参考
 
