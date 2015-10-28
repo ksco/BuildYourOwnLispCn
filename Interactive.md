@@ -242,6 +242,130 @@ int main(int argc, char** argv) {
 
 ## 参考
 
+`prompt_unix.c`
 
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+#include <editline/readline.h>
+#include <editline/history.h>
+
+int main(int argc, char** argv) {
+   
+  /* Print Version and Exit Information */
+  puts("Lispy Version 0.0.0.0.1");
+  puts("Press Ctrl+c to Exit\n");
+   
+  /* In a never ending loop */
+  while (1) {
+    
+    /* Output our prompt and get input */
+    char* input = readline("lispy> ");
+    
+    /* Add input to history */
+    add_history(input);
+    
+    /* Echo input back to user */    
+    printf("No you're a %s\n", input);
+
+    /* Free retrived input */
+    free(input);
+    
+  }
+  
+  return 0;
+}
+```
+
+`prompt_windows.c`
+```c
+#include <stdio.h>
+
+/* Declare a buffer for user input of size 2048 */
+static char input[2048];
+
+int main(int argc, char** argv) {
+
+  /* Print Version and Exit Information */
+  puts("Lispy Version 0.0.0.0.1");
+  puts("Press Ctrl+c to Exit\n");
+
+  /* In a never ending loop */
+  while (1) {
+
+    /* Output our prompt */
+    fputs("lispy> ", stdout);
+
+    /* Read a line of user input of maximum size 2048 */
+    fgets(input, 2048, stdin);
+
+    /* Echo input back to user */
+    printf("No you're a %s", input);
+  }
+
+  return 0;
+}
+```
+
+`prompt.c`
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+/* If we are compiling on Windows compile these functions */
+#ifdef _WIN32
+#include <string.h>
+
+static char buffer[2048];
+
+/* Fake readline function */
+char* readline(char* prompt) {
+  fputs(prompt, stdout);
+  fgets(buffer, 2048, stdin);
+  char* cpy = malloc(strlen(buffer)+1);
+  strcpy(cpy, buffer);
+  cpy[strlen(cpy)-1] = '\0';
+  return cpy;
+}
+
+/* Fake add_history function */
+void add_history(char* unused) {}
+
+/* Otherwise include the editline headers */
+#else
+#include <editline/readline.h>
+#include <editline/history.h>
+#endif
+
+int main(int argc, char** argv) {
+   
+  puts("Lispy Version 0.0.0.0.1");
+  puts("Press Ctrl+c to Exit\n");
+   
+  while (1) {
+    
+    /* Now in either case readline will be correctly defined */
+    char* input = readline("lispy> ");
+    add_history(input);
+
+    printf("No you're a %s\n", input);
+    free(input);
+    
+  }
+  
+  return 0;
+}
+```
 
 ## 彩蛋
+
+- 将提示信息 `lispy>` 换成其他你喜欢的。
+- 修改打印的信息。
+- 在程序开头的提示信息中添加一些其他的信息。
+- 在字符串中，`\n` 表示什么？
+- `printf` 还有哪些输出模式？
+- 如果你向 `printf` 传递一个与模式不匹配的值会怎样？
+- 预处理器 `#ifndef` 有什么用？
+- 预处理器 `#define` 有什么用？
+- `_WIN32` 在 Windows 中有定义，那在 Linux 和 Mac 中定义了什么呢？
