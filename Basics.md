@@ -142,7 +142,7 @@ for (int i = 0; i < 10; i++) {
 }
 ```
 
-## 福利
+## 彩蛋
 
 - 使用 `for` 循环打印 5 次 `"Hello, world!"`。
 - 使用 `while` 循环打印 5 次 `"Hello, world!"`。
