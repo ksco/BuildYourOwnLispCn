@@ -40,13 +40,13 @@ Chomsky 得出的这些结论是非常重要的。它意味着即使一门语言
 
 `mpc` 是我(原作者)编写的一个解析器组合子(Parser Combinators)库。这意味着，你可以使用这个库为特定的语言编写语法解析器。编写语法解析器的方法有很多，使用解析器组合子的好处就在于，它极大地简化了原本枯燥无聊的工作，而仅仅编写高层的抽象语法规则就可以了。
 
-<!-->
+<!--
 
 TODO:
 
 Many Parser Combinator libraries actually work by letting you write normal code that looks a bit like a grammar, not by actually specifying a grammar directly. In many situations this is fine, but sometimes it can get clunky and complicated. Luckily for us mpc allows us to write normal code that just looks like a grammar, or we can use special notation to write a grammar directly!
 
-<-->
+-->
 
 
 ## 编写语法规则
