@@ -53,8 +53,9 @@ Many Parser Combinator libraries actually work by letting you write normal code 
 
 下面我们来编写一个柴犬语([Doge](http://knowyourmeme.com/memes/doge))的解析器以便熟悉 `mpc` 的用法。
 
-- 形容词包括 “wow”、“many”、“so”、“such”
-- 名词包括 “lisp”、“language”、“c”、“book”、“build”
-- 短语由形容词后接名词组成。
-- Doge 语句由 0 到多个短语组成。
+- *形容词(`Adjective`)*包括 “wow”、“many”、“so”、“such”
+- *名词*包括 “lisp”、“language”、“c”、“book”、“build”
+- *短语*由*形容词后接*名词*组成。
+- Doge 语句由 0 到多个*短语*组成。
 
+现在我们尝试定义一下*形容词*和*名词*，为此我们创建两个解析器，类型是 `mpc_parser_t*`，然后将解析器存储在 
