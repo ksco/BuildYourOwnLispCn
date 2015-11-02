@@ -53,12 +53,12 @@ Many Parser Combinator libraries actually work by letting you write normal code 
 
 下面我们来编写一个柴犬语([Doge](http://knowyourmeme.com/memes/doge))的解析器以便熟悉 `mpc` 的用法。
 
-- *形容词(Adjective)*包括 “wow”、“many”、“so”、“such”
-- *名词(Noun)*包括 “lisp”、“language”、“c”、“book”、“build”
+- *形容词(Adjective)*包括 “wow”、“many”、“so”、“such” 符号。
+- *名词(Noun)*包括 “lisp”、“language”、“c”、“book”、“build” 符号。
 - *短语(Phrase)*由*形容词(Adjective)*后接*名词(Noun)*组成。
 - Doge 语句由 0 到多个*短语(Phrase)*组成。
 
-现在我们尝试定义一下*形容词(Adjective)*和*名词(Noun)*，为此我们创建两个解析器，类型是 `mpc_parser_t*`，然后将解析器存储在 `Adjective` 和 `Noun` 两个变量中。`mpc_or` 解析器表示必须是后面参数中的一个符号，而 `mpc_sym` 将字符串转化为一个可解析的符号。
+现在我们尝试定义一下*形容词(Adjective)*和*名词(Noun)*，为此我们创建两个解析器，类型是 `mpc_parser_t*`，然后将解析器存储在 `Adjective` 和 `Noun` 两个变量中。`mpc_or` 函数产生一个解析器，它可接受的语句必须是后面参数中的一个，而 `mpc_sym` 将字符串转化为一个语句。
 
 下面的代码也正如我们上面的描述一样：
 
@@ -76,4 +76,10 @@ mpc_parser_t* Noun = mpc_or(5,
   mpc_sym("c")
 );
 ```
+
+> 我怎样才能使用上面的这些 `mpc` 库提供的函数？
+
+*现在先不用担心编译和运行程序的事情，先确保理解背后的理论知识。在下一章中我们将使用使用`mpc` 实现一个更加接近我们的 Lisp 的语言。*
+
+接下来，我们使用已经定义好的解析器来定义短语(Phrase)解析器。我们需要使用 `mpc_and` 函数。这个函数返回的解析器可接受的符号必须是第一个参数后面紧跟第二个，然后是第三个...以此类推。所以我们将先前定义的 `Adjective` 和 `Noun` 传递给它，表示形容词后面紧跟一个名词组成一个短语。暂时忽略参数 `mpcf_strfold` 和 `free`。
 
