@@ -59,3 +59,20 @@ Many Parser Combinator libraries actually work by letting you write normal code 
 - Doge 语句由 0 到多个*短语(Phrase)*组成。
 
 现在我们尝试定义一下*形容词(Adjective)*和*名词(Noun)*，为此我们创建两个解析器，类型是 `mpc_parser_t*`，然后将解析器存储在 `Adjective` 和 `Noun` 两个变量中。`mpc_or` 解析器表示必须是后面参数中的一个符号，而 `mpc_sym` 将字符串转化为一个可解析的符号。
+
+下面的代码也正如我们上面的描述一样：
+
+```c
+/* Build a parser 'Adjective' to recognize descriptions */
+mpc_parser_t* Adjective = mpc_or(4, 
+  mpc_sym("wow"), mpc_sym("many"),
+  mpc_sym("so"),  mpc_sym("such")
+);
+
+/* Build a parser 'Noun' to recognize things */
+mpc_parser_t* Noun = mpc_or(5,
+  mpc_sym("lisp"), mpc_sym("language"),
+  mpc_sym("book"),mpc_sym("build"), 
+  mpc_sym("c")
+);
+```
