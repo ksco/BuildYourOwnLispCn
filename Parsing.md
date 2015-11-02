@@ -50,3 +50,22 @@
 ## 安装 mpc
 
 在我们正式编写这个语法解析器之前，正如之前在 Linux 和 Mac 上使用 `editline` 库一样，首先需要包含 `mpc` 的头文件，然后链接 `mpc` 库。
+
+你可以直接使用第四章的代码，并将源文件重命名为 `parsing.c`，然后从 `mpc` 的[项目主页](http://github.com/orangeduck/mpc) 下载 `mpc.h` 和  `mpc.c`，放到和你的 `parsing.c` 同目录下。
+
+在 `parsing.c` 的顶部添加 `#include "mpc.h"` 将 `mpc` 包含进来。将 `mpc.c` 放到命令行中来链接它。另外，在 Linux 上，还要加一个 -lm  参数来链接数学库。
+
+Mac 和 Linux：
+
+`cc -std=c99 -Wall parsing.c mpc.c -ledit -lm -o parsing`
+
+Windows：
+
+`cc -std=c99 -Wall parsing.c mpc.c -o parsing`
+
+> 等一下，包含头文件难道不是用 `#include <mpc.h>`？
+
+*事实上，在 C 语言中有两种包含头文件的方式，一种是用尖括号 `<>`，还有一种是用 `""` 双引号。通常，尖括号用来包含系统头文件如 `stdio.h`，双引号用来包含其他的头文件如 `mpc.h`。*
+
+## 波兰表达式语法解析
+
