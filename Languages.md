@@ -58,4 +58,4 @@ Many Parser Combinator libraries actually work by letting you write normal code 
 - *短语(Phrase)*由*形容词(Adjective)*后接*名词(Noun)*组成。
 - Doge 语句由 0 到多个*短语(Phrase)*组成。
 
-现在我们尝试定义一下*形容词(Adjective)*和*名词(Noun)*，为此我们创建两个解析器，类型是 `mpc_parser_t*`，然后将解析器存储在 `Adjective` 和 `Noun` 两个变量中。`mpc_or` 解析器表示必须是后面参数中的一个，而 `mpc_sym` 将字符串转化为一个可解析的符号。
+现在我们尝试定义一下*形容词(Adjective)*和*名词(Noun)*，为此我们创建两个解析器，类型是 `mpc_parser_t*`，然后将解析器存储在 `Adjective` 和 `Noun` 两个变量中。`mpc_or` 解析器表示必须是后面参数中的一个符号，而 `mpc_sym` 将字符串转化为一个可解析的符号。
