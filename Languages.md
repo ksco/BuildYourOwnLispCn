@@ -53,14 +53,14 @@ Many Parser Combinator libraries actually work by letting you write normal code 
 下面我们来编写一个柴犬语( [Doge](http://knowyourmeme.com/memes/doge) )的语法解析器以便熟悉 `mpc` 的用法。
 
 
-先来看一下 Doge 语言的语法描述：
+先来看一下 `Doge` 语言的语法描述：
 
-- *形容词(Adjective)*包括 “wow”、“many”、“so”、“such” 符号。
-- *名词(Noun)*包括 “lisp”、“language”、“c”、“book”、“build” 符号。
-- *短语(Phrase)*由*形容词(Adjective)*后接*名词(Noun)*组成。
-- Doge 语言由 0 到多个*短语(Phrase)*组成。
+- 形容词 (`Adjective`) 包括 `wow`、`many`、`so`、`such` 符号。
+- 名词 (`Noun`) 包括 `lisp`、`language`、`c`、`book`、`build` 符号。
+- 短语 (`Phrase`) 由形容词 (`Adjective`) 后接名词 (`Noun`) 组成。
+- `Doge` 语言由 0 到多个 短语(`Phrase`) 组成。
 
-现在我们尝试定义一下*形容词(Adjective)*和*名词(Noun)*，为此我们创建两个解析器，类型是 `mpc_parser_t*`，然后将解析器存储在 `Adjective` 和 `Noun` 两个变量中。`mpc_or` 函数产生一个解析器，它可接受的语句必须是指定语句中的一个。而 `mpc_sym` 将字符串转化为一个语句。
+现在我们尝试定义一下形容词和名词，为此我们创建两个解析器，类型是 `mpc_parser_t*`，然后将解析器存储在 `Adjective` 和 `Noun` 两个变量中。`mpc_or` 函数产生一个解析器，它可接受的语句必须是指定语句中的一个。而 `mpc_sym` 将字符串转化为一个语句。
 
 下面的代码也正如我们上面的描述一样：
 
