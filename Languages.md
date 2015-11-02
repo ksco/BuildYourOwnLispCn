@@ -103,3 +103,47 @@ mpc_parser_t* Doge = mpc_many(mpcf_strfold, Phrase);
 "wow lisp wow c many language"
 "so c"
 ```
+
+我们可以继续使用更多 `mpc` 提供的其他函数，一步一步地编写能解析更加复杂的语法的解析器。相应的，随着复杂度的增加，代码的可读性也会越来越差。所以，这种写法也并不简单。`mpc` 提供了一系列的帮助函数帮助用户更加简单地完成常见的任务，具体的文档说明可以参见[项目主页](http://github.com/orangeduck/mpc)。使用这些函数能够更好更快地构建复杂语言的解析器，并能够提供更加精细地控制。
+
+## 更加自然的语法规则
+
+`mpc` 允许我们使用一种更加自然的方式来编写语法规则。我们可以将整个语言的语法规则写在一个长字符串中，而不是使用啰嗦难懂的 C 语句。我们不再需要关心如何组织或删除各个语句，也不必关心`mpcf_strfold` 或是 `free` 参数。所有的这些工作都是都是自动完成的。
+
+下面，我们使用这个方法重新编写了上面实现过的 Doge 语言：
+
+```c
+mpc_parser_t* Adjective = mpc_new("adjective");
+mpc_parser_t* Noun      = mpc_new("noun");
+mpc_parser_t* Phrase    = mpc_new("phrase");
+mpc_parser_t* Doge      = mpc_new("doge");
+
+mpca_lang(MPCA_LANG_DEFAULT,
+  "                                           \
+    adjective : \"wow\" | \"many\"            \
+              |  \"so\" | \"such\";           \
+    noun      : \"lisp\" | \"language\"       \
+              | \"book\" | \"build\" | \"c\"; \
+    phrase    : <adjective> <noun>;           \
+    doge      : <phrase>*;                    \
+  ",
+  Adjective, Noun, Phrase, Doge);
+
+/* Do some parsing here... */
+
+mpc_cleanup(4, Adjective, Noun, Phrase, Doge);
+```
+
+即使你现在暂时不理解上面的长字符串的语法规则，也能明显地感觉到这个方法要比之前的清晰的多。下面就来具体的学习一下其中的某些特殊符号的意义及用法。
+
+注意到，现在定义一个语法规则分为两个步骤：
+1. 使用 `mpc_new` 定义一些语法规则的名字。
+2. 使用 `mpca_lang` 定义这些语法规则。
+
+`mpca_lang` 函数的第一个参数是操作标记，在这里我们使用默认选项。第二个参数是 C 语言的一个长字符串。这个字符串定义了具体的语法。它包含一系列的递归规则。每个规则分为两部分，用 `:` 隔开，冒号左边是规则的名字，右边是规则的定义，使用 `;` 表示规则结束。
+
+定义语法规则的一些特殊符号的用法如下：
+
+|语法表示|作用|
+|------------|-------------------------|
+|"ab"|
