@@ -93,3 +93,13 @@ Doge 语言是由 0 到多个短语(Phrase) 组成的。`mpc_many` 函数表达�
 mpc_parser_t* Doge = mpc_many(mpcf_strfold, Phrase);
 ```
 
+上述语句表明 Doge 可以接受任意多条语句。这也意味着 Doge 语言是无穷的。下面列出了一些符合 Doge 语法的例子：
+
+```
+"wow book such language many lisp"
+"so c such build such language"
+"many build wow c"
+""
+"wow lisp wow c many language"
+"so c"
+```
