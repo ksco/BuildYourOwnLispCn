@@ -69,3 +69,31 @@ Windows：
 
 ## 波兰表达式语法解析
 
+把上面描述的规则用正式的语言编写，并在必要的地方使用正则表达式。下面就是波兰表达式的最终语法规则。认真读一下下面的代码，验证是否与之前的描述相符。
+
+```c
+/* Create Some Parsers */
+mpc_parser_t* Number   = mpc_new("number");
+mpc_parser_t* Operator = mpc_new("operator");
+mpc_parser_t* Expr     = mpc_new("expr");
+mpc_parser_t* Lispy    = mpc_new("lispy");
+
+/* Define them with the following Language */
+mpca_lang(MPCA_LANG_DEFAULT,
+  "                                                     \
+    number   : /-?[0-9]+/ ;                             \
+    operator : '+' | '-' | '*' | '/' ;                  \
+    expr     : <number> | '(' <operator> <expr>+ ')' ;  \
+    lispy    : /^/ <operator> <expr>+ /$/ ;             \
+  ",
+  Number, Operator, Expr, Lispy);
+```
+
+我们还需要使用在第四章中编写的交互式的程序中。将上面的代码放在 `main` 函数的开头处，打印版本信息的代码之前。在 `main` 函数的最后，还应该将使用完毕的解析器删除。只需要将下面的代码放在 `return` 语句之前即可。
+
+/* Undefine and Delete our Parsers */
+mpc_cleanup(4, Number, Operator, Expr, Lispy);
+
+> 编译的时候得到了一个错误：`undefined reference to `mpc_lang'`
+
+*注意函数的名字为 `mpca_lang`，`mpc` 后面有个 `a` 字母。*
