@@ -121,3 +121,114 @@ if (mpc_parse("<stdin>", input, Lispy, &r)) {
 - 解析成功时会产生一个内部结构，并保存到 `r` 的 `output` 字段中。我们可以使用 `mpc_ast_print` 将这个结构打印出来，使用 `mpc_ast_delete` 将其删除。
 - 解析失败时则会将错误信息保存在 `r` 的 `error` 字段中。我们可以使用 `mpc_err_print` 将这个结构打印出来，使用 `mpc_err_delete` 将其删除。
 
+重新编译程序，尝试不同的输入，看看程序的返回信息是什么。正常情况下返回值应该如下所示：
+
+```
+Lispy Version 0.0.0.0.2
+Press Ctrl+c to Exit
+
+lispy> + 5 (* 2 2)
+>
+  regex
+  operator|char:1:1 '+'
+  expr|number|regex:1:3 '5'
+  expr|>
+    char:1:5 '('
+    operator|char:1:6 '*'
+    expr|number|regex:1:8 '2'
+    expr|number|regex:1:10 '2'
+    char:1:11 ')'
+  regex
+lispy> hello
+<stdin>:1:1: error: expected whitespace, '+', '-', '*' or '/' at 'h'
+lispy> / 1dog
+<stdin>:1:4: error: expected one of '0123456789', whitespace, '-', one or more of one of '0123456789', '(' or end of input at 'd'
+lispy>
+```
+
+> 编译的时候得到一个错误：`<stdin>:1:1: error: Parser Undefined!`
+
+*出现这个错误说明传给 `mpca_lang` 函数的语法规则存在错误，请仔细检查一下出错的地方。*
+
+## 参考
+
+`parsing.c`
+
+```c
+#include "mpc.h"
+
+#ifdef _WIN32
+
+static char buffer[2048];
+
+char* readline(char* prompt) {
+  fputs(prompt, stdout);
+  fgets(buffer, 2048, stdin);
+  char* cpy = malloc(strlen(buffer)+1);
+  strcpy(cpy, buffer);
+  cpy[strlen(cpy)-1] = '\0';
+  return cpy;
+}
+
+void add_history(char* unused) {}
+
+#else
+#include <editline/readline.h>
+#include <editline/history.h>
+#endif
+
+int main(int argc, char** argv) {
+  
+  /* Create Some Parsers */
+  mpc_parser_t* Number   = mpc_new("number");
+  mpc_parser_t* Operator = mpc_new("operator");
+  mpc_parser_t* Expr     = mpc_new("expr");
+  mpc_parser_t* Lispy    = mpc_new("lispy");
+  
+  /* Define them with the following Language */
+  mpca_lang(MPCA_LANG_DEFAULT,
+    "                                                     \
+      number   : /-?[0-9]+/ ;                             \
+      operator : '+' | '-' | '*' | '/' ;                  \
+      expr     : <number> | '(' <operator> <expr>+ ')' ;  \
+      lispy    : /^/ <operator> <expr>+ /$/ ;             \
+    ",
+    Number, Operator, Expr, Lispy);
+  
+  puts("Lispy Version 0.0.0.0.2");
+  puts("Press Ctrl+c to Exit\n");
+  
+  while (1) {
+  
+    char* input = readline("lispy> ");
+    add_history(input);
+    
+    /* Attempt to parse the user input */
+    mpc_result_t r;
+    if (mpc_parse("<stdin>", input, Lispy, &r)) {
+      /* On success print and delete the AST */
+      mpc_ast_print(r.output);
+      mpc_ast_delete(r.output);
+    } else {
+      /* Otherwise print and delete the Error */
+      mpc_err_print(r.error);
+      mpc_err_delete(r.error);
+    }
+    
+    free(input);
+  }
+  
+  /* Undefine and delete our parsers */
+  mpc_cleanup(4, Number, Operator, Expr, Lispy);
+  
+  return 0;
+}
+```
+
+## 彩蛋
+
+- 使用正则表达式编写规则，使其可以解析任意多个 `a`、`b` 组成的字符串，例如: `aababa`、`bbaa`。
+- 使用正则表达式编写规则，使其可以解析任意多个交替出现的 `a`、`b` 组成的字符串，例如: `ababab`、`aba`。
+- 修改语法规则，添加新的操作符，例如取余运算符 `%`。
+- 修改语法规则，使其可以解析用文本形式的操作符，例如：`add`、`sub`、`mul`、`div`等。
+- 修改语法规则，使其能够处理浮点数，例如：`0.01`、`5.21`、`10.2`。
