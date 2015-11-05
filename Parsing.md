@@ -69,7 +69,7 @@ Windows：
 
 ## 波兰表达式语法解析
 
-本节把白话文叙述的规则用正式的描述语言编写，并在必要的地方使用正则表达式。下面就是波兰表达式的最终语法规则。认真读下面的代码，验证是否与之前叙述的规则相符。
+本节把白话文叙述的规则用正式的描述语言编写，并在必要的地方使用正则表达式。下面就是波兰表达式最终的语法规则。认真阅读下方代码，验证其是否与之前叙述的规则相符。
 
 ```c
 /* Create Some Parsers */
@@ -94,7 +94,7 @@ mpca_lang(MPCA_LANG_DEFAULT,
 /* Undefine and Delete our Parsers */
 mpc_cleanup(4, Number, Operator, Expr, Lispy);
 
-> 编译的时候得到一个错误：`undefined reference to `mpc_lang'`
+> 编译的时候得到一个错误：`undefined reference to 'mpc_lang'`
 
 *注意函数的名字为 `mpca_lang`，`mpc` 后面有个 `a` 字母。*
 
