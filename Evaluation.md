@@ -18,7 +18,7 @@ typedef struct mpc_ast_t {
 } mpc_ast_t;
 ```
 
-下面我们来逐一的看看结构体各个字段的含义。
+下面来逐一的看看结构体各个字段的含义。
 
 第一个为 `tag` 字段。当我们打印这个树形结构时，`tag` 就是在节点内容之前的信息，它表示了解析这个节点时所用到的所有规则。例如：`expr|number|regex`。
 
@@ -32,3 +32,25 @@ typedef struct mpc_ast_t {
 
 其中，`children` 字段的类型是 `mpc_ast_t**`。这是一个二重指针类型。实际上，它并不像看起来那么可怕，我们会在后面的章节中详细解释它。现在你只需要知道它是孩子节点的列表即可。
 
+我们可以对 `children` 使用数组的语法，在其后使用 `[x]` 来获取某个下标的值。比如，可以用 `children[0]` 来获取第一个孩子节点。注意，在 C 语言中数组是从 `0` 开始计数的。
+
+因为 `mpc_ast_t*` 是指向结构体的指针类型，所以获取其字段的语法有些许不同。我们需要使用 `->` 符号，而不是 `.` 符号。
+
+```c
+/* Load AST from output */
+mpc_ast_t* a = r.output;
+printf("Tag: %s\n", a->tag);
+printf("Contents: %s\n", a->contents);
+printf("Number of children: %i\n", a->children_num);
+
+/* Get First Child */
+mpc_ast_t* c0 = a->children[0];
+printf("First Child Tag: %s\n", c0->tag);
+printf("First Child Contents: %s\n", c0->contents);
+printf("First Child Number of children: %i\n",
+  c0->children_num);
+```
+
+## 递归
+
+树形结构有个奇怪的地方，它是自身重复的。树的每个孩子节点都是树，每个孩子节点的孩子节点也是树。
