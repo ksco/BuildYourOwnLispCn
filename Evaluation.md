@@ -107,5 +107,38 @@ lispy> * 10 (+ 1 51)
 
 在对语法树进行求值的时候，正如前面编写的 `number_of_nodes` 函数，需要保存计算的结果。在这里，我们使用 C 语言中 `long` 类型(长整形)。
 
-另外，为了检测节点的类型，或是获得节点中保存的树值，我们会用到节点中的 `tag` 和 `contents` 字段。这些字段都是字符串类型的，所以需要用到一些辅助性的库函数：
+另外，为了检测节点的类型，或是获得节点中保存的数值，我们会用到节点中的 `tag` 和 `contents` 字段。这些字段都是字符串类型的，所以需要用到一些辅助性的库函数：
+
+| 函数名 | 作用 |
+|-----------------|------------------------|
+| `atoi` | 将 `char*` 转化为 `long` 型 |
+| `strcmp` | 接受两个 `char*` 参数，比较他们是否相等，如果相等就返回 0 |
+| `strstr` | 接受两个 `char*`，如果第一个字符串包含第二个，返回其在第一个中首次出现的位置的指针，否则返回 0 |
+
+我们可以使用 `strcmp` 来检查应该使用什么操作符，并使用 `strstr` 来检测 `tag` 中是否含有某个字段。有了这些基础，我们的递归求值函数就可以写出来啦：
+
+```c
+long eval(mpc_ast_t* t) {
+  
+  /* If tagged as number return it directly. */ 
+  if (strstr(t->tag, "number")) {
+    return atoi(t->contents);
+  }
+  
+  /* The operator is always second child. */
+  char* op = t->children[1]->contents;
+  
+  /* We store the third child in `x` */
+  long x = eval(t->children[2]);
+  
+  /* Iterate the remaining children and combining. */
+  int i = 3;
+  while (strstr(t->children[i]->tag, "expr")) {
+    x = eval_op(x, op, eval(t->children[i]));
+    i++;
+  }
+  
+  return x;  
+}
+```
 
