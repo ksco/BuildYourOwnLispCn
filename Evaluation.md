@@ -142,3 +142,38 @@ long eval(mpc_ast_t* t) {
 }
 ```
 
+其中，`eval_op` 函数的定义如下。它接受一个数字，一个操作符，和另一个数字。它检测操作符的类型，对其进行相应的计算，并将结果返回。
+
+```c
+/* Use operator string to see which operation to perform */
+long eval_op(long x, char* op, long y) {
+  if (strcmp(op, "+") == 0) { return x + y; }
+  if (strcmp(op, "-") == 0) { return x - y; }
+  if (strcmp(op, "*") == 0) { return x * y; }
+  if (strcmp(op, "/") == 0) { return x / y; }
+  return 0;
+}
+```
+
+##打印
+
+有了求值函数，就不能满足于打印语法树了，现在我们可以打印语法树求值后的结果啦。
+
+```c
+long result = eval(r.output);
+printf("%li\n", result);
+mpc_ast_delete(r.output);
+```
+
+所有的工作完成无误后，就能看到我们的新语言执行一些基本的数学运算啦！
+
+```
+Lispy Version 0.0.0.0.3
+Press Ctrl+c to Exit
+
+lispy> + 5 6
+11
+lispy> - (* 10 10) (+ 1 1 1)
+97
+```
+
