@@ -22,7 +22,7 @@ C 语言有很多种错误处理方式，但针对当前的项目，我更加倾
 
 为了达到这个目的，我们需要能表示这两种结果的数据结构。简单起见，我们使用结构体来表示，并使用 `type` 字段来告诉我们当前哪个字段是有意义的。
 
-结构体的名为 `lval`，取义 *Lisp Value*，定义如下：
+结构体名为 `lval`，取义 *Lisp Value*，定义如下：
 
 ```
 /* Declare New lval Struct */
@@ -53,7 +53,7 @@ C 语言为此提供了语言特性上的支持——枚举（`enum`）。
 enum { LVAL_NUM, LVAL_ERR };
 ```
 
-`enum` 语句声明了一系列整形常量，并自动为它们赋值（译者注：从 0 开始，依次递增）。上面的代码展示了如何为 `type` 字段声明枚举值。
+`enum` 语句声明了一系列整型常量，并自动为它们赋值（译者注：从 0 开始，依次递增）。上面的代码展示了如何为 `type` 字段声明枚举值。
 
 另外，我们还需要为 `error` 字段也声明一些枚举值。目前，我们需要声明三种类型的错误，包括：除数为零、操作符未知、操作数过大。代码如下：
 
@@ -62,3 +62,56 @@ enum { LVAL_NUM, LVAL_ERR };
 enum { LERR_DIV_ZERO, LERR_BAD_OP, LERR_BAD_NUM };
 ```
 
+## Lisp Value 函数
+
+我们的 `lval` 类型已经跃跃欲试了，但我们没有方法能创建新的实例。所以我们定义了两个函数来完成这项任务：
+
+```
+/* Create a new number type lval */
+lval lval_num(long x) {
+  lval v;
+  v.type = LVAL_NUM;
+  v.num = x;
+  return v;
+}
+
+/* Create a new error type lval */
+lval lval_err(int x) {
+  lval v;
+  v.type = LVAL_ERR;
+  v.err = x;
+  return v;
+}
+```
+
+因为 `lval` 是一个结构体，所以已经不能简单的使用 `printf` 函数打印它了。对于不同类型的 `lval` 我们应该都能正确地打印出来。C 语言为此种需求提供了方便快捷的 `switch` 语句。它把输入和每种情况（`case`）相比较，如果值相等，它就会执行其中的代码，直到遇到 `break` 语句为止。
+
+利用 `switch`，我们就可以轻松完成需求了：
+
+```
+/* Print an "lval" */
+void lval_print(lval v) {
+  switch (v.type) {
+    /* In the case the type is a number print it */
+    /* Then 'break' out of the switch. */
+    case LVAL_NUM: printf("%li", v.num); break;
+
+    /* In the case the type is an error */
+    case LVAL_ERR:
+      /* Check what type of error it is and print it */
+      if (v.err == LERR_DIV_ZERO) {
+        printf("Error: Division By Zero!");
+      }
+      if (v.err == LERR_BAD_OP)   {
+        printf("Error: Invalid Operator!");
+      }
+      if (v.err == LERR_BAD_NUM)  {
+        printf("Error: Invalid Number!");
+      }
+    break;
+  }
+}
+
+/* Print an "lval" followed by a newline */
+void lval_println(lval v) { lval_print(v); putchar('\n'); }
+```
