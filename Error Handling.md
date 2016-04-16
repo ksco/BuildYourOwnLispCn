@@ -115,3 +115,77 @@ void lval_print(lval v) {
 /* Print an "lval" followed by a newline */
 void lval_println(lval v) { lval_print(v); putchar('\n'); }
 ```
+
+## 求值
+
+现在知道了 `lval` 类型的使用方法，我们需要用它来替换掉之前使用的 `long` 类型。
+
+不仅仅是简单的将 `long` 替换为 `lval`，我们还需要修改函数使其能正确处理*数字*或是*错误*作为输入的情况。
+
+在 `eval_op` 函数中，如果监测到错误，函数应该立刻返回，当且仅当两个操作数都为数字类型时才做计算。另外，对于本章开头的除数为零的错误，也应该返回错误信息。
+
+```
+lval eval_op(lval x, char* op, lval y) {
+
+  /* If either value is an error return it */
+  if (x.type == LVAL_ERR) { return x; }
+  if (y.type == LVAL_ERR) { return y; }
+
+  /* Otherwise do maths on the number values */
+  if (strcmp(op, "+") == 0) { return lval_num(x.num + y.num); }
+  if (strcmp(op, "-") == 0) { return lval_num(x.num - y.num); }
+  if (strcmp(op, "*") == 0) { return lval_num(x.num * y.num); }
+  if (strcmp(op, "/") == 0) {
+    /* If second operand is zero return error */
+    return y.num == 0 
+      ? lval_err(LERR_DIV_ZERO) 
+      : lval_num(x.num / y.num);
+  }
+
+  return lval_err(LERR_BAD_OP);
+}
+```
+
+另外，`eval` 函数也需要小小地修整一下。仅仅需要为数字转换部分增加一点错误处理代码。
+
+新代码中，我们选用 `strtol` 函数进行字符串到数字的转换。我们可以通过检测 `errno` 变量确定是否转换成功。这无疑比使用 `atoi` 函数更为明智。
+
+```
+lval eval(mpc_ast_t* t) {
+  
+  if (strstr(t->tag, "number")) {
+    /* Check if there is some error in conversion */
+    errno = 0;
+    long x = strtol(t->contents, NULL, 10);
+    return errno != ERANGE ? lval_num(x) : lval_err(LERR_BAD_NUM);
+  }
+  
+  char* op = t->children[1]->contents;  
+  lval x = eval(t->children[2]);
+  
+  int i = 3;
+  while (strstr(t->children[i]->tag, "expr")) {
+    x = eval_op(x, op, eval(t->children[i]));
+    i++;
+  }
+  
+  return x;  
+}
+```
+
+最后的一小步！使用新定义的打印函数：
+
+```
+lval result = eval(r.output);
+lval_println(result);
+mpc_ast_delete(r.output);
+```
+
+完成！尝试运行新程序，确保除数为零时不会崩溃了：）
+
+```
+lispy> / 10 0
+Error: Division By Zero!
+lispy> / 10 2
+5
+```
