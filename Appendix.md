@@ -8,4 +8,4 @@
 
 ## Beta 版本读者
 
-谢谢所有 Beta 版本的读者提供的宝贵反馈、纠错、建议以及鼓励。非常感谢以下 Reddit 用户：neelaryan, bitsbytesbikes, acesHD, CodyChan, northClan, da4c30ff, nowords, ozhank, crackez, stubarfoo, viezebanaan, JMagnum86, uNEV6X29rpf3, fortyninezeronine, skeeto, miketaylr, wonnernaus, Barthalion, codyrioux, sigjuice, yoshiK, u-n-sky。
+谢谢所有 Beta 版本的读者提供的反馈、纠错、建议以及鼓励。非常感谢以下 Reddit 用户：neelaryan, bitsbytesbikes, acesHD, CodyChan, northClan, da4c30ff, nowords, ozhank, crackez, stubarfoo, viezebanaan, JMagnum86, uNEV6X29rpf3, fortyninezeronine, skeeto, miketaylr, wonnernaus, Barthalion, codyrioux, sigjuice, yoshiK, u-n-sky。
