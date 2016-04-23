@@ -48,4 +48,63 @@ Lisp 程序代码与数据的形式完全相同，这使得它非常强大，能
 
 ### 堆(The Heap)
 
-堆占据另一部分内存，主要用来存放长生命周期期的数据。堆中的数据必须手动申请和释放。申请内存使用
+堆占据另一部分内存，主要用来存放长生命周期期的数据。堆中的数据必须手动申请和释放。申请内存使用 `malloc` 函数。这个函数接受一个数字作为要申请的字节数，返回申请好的内存块的指针。
+
+当使用完毕申请的内存，我们还需要将其释放，只要将 `malloc`  函数返回的指针传给 `free` 函数即可。
+
+堆比栈的使用难度要大一些，因为它要求程序员手动调用 `free` 函数释放内存，而且还要正确调用。如果不释放，程序就有可能不断申请新的内存，而不释放旧的，导致内存越用越多。这也被称为*内存泄漏*。避免这种情况发生的一个简单有效的办法就是，针对每一个 `malloc` 函数调用，都有且只有一个 `free` 函数与之对应。这某种程度上就能保证程序能正确处理堆内存的使用。
+
+我把堆想象成一个自助存储仓库，我们使用 `malloc` 函数申请存储空间。我们可以在自主存储仓库和建筑工地之间自由存取。它非常适合用来存放大件的偶尔才用一次的物件。唯一的问题就是在用完之后要记得使用 `free` 函数将空间归还。
+
+## 解析表达式
+
+因为现在我们考虑的是 S-表达式，而不是之前的波兰表达式了，我们需要更新一下语法分析器。S-表达式的语法非常简单。只是小括号之间包含一组表达式而已。而这些表达式可以是数字、操作符或是其他的 S-表达式。只需修改一下之前写的就可以了。另外，我们还需把 `operator` 规则重命名为 `symbol`。为之后添加更多的操作符以及变量、函数等做准备。
+
+```
+mpc_parser_t* Number = mpc_new("number");
+mpc_parser_t* Symbol = mpc_new("symbol");
+mpc_parser_t* Sexpr  = mpc_new("sexpr");
+mpc_parser_t* Expr   = mpc_new("expr");
+mpc_parser_t* Lispy  = mpc_new("lispy");
+
+mpca_lang(MPCA_LANG_DEFAULT,
+  "                                          \
+    number : /-?[0-9]+/ ;                    \
+    symbol : '+' | '-' | '*' | '/' ;         \
+    sexpr  : '(' <expr>* ')' ;               \
+    expr   : <number> | <symbol> | <sexpr> ; \
+    lispy  : /^/ <expr>* /$/ ;               \
+  ",
+  Number, Symbol, Sexpr, Expr, Lispy);
+```
+
+同时，还要记得在退出之前做好清理工作：
+
+```
+mpc_cleanup(5, Number, Symbol, Sexpr, Expr, Lispy);
+```
+
+## 表达式结构
+
+首先，我们需要让 `lval` 能够存储 S-表达式。这意味着我们还要能存储符号(Symbols)和数字。我们向枚举中添加两个新的类型。`LVAL_SYM` 表示操作符类型，例如 `+` 等，`LVAL_SEXPR` 表示 S-表达式。
+
+```
+enum { LVAL_ERR, LVAL_NUM, LVAL_SYM, LVAL_SEXPR };
+```
+
+S-表达式是一个可变长度的列表。在本章的开头已经提到，我们不能创建可变长度的结构体，所以只能使用指针来表示它。我们为  `lval` 结构体创建一个 `cell` 字段，指向一个存放 `lval*` 列表的区域。所以 `cell` 的类型就应该是 `lval**`。指向 `lval*` 的指针。我们还需要知道 `cell` 列表中的元素个数，所以我创建了 `count` 字段。
+
+我们使用字符串来表示符号(Symbols)，另外我们还增加了另一个字符串用来存储错误信息。也就是说现在 `lval` 可以存储更加具体的错误信息了，而不只是一个错误代码，这使得我们的错误报告系统更加灵活好用。我们也可以删除掉之前写的错误枚举了。升级过后的 `lval` 结构体如下所示：
+
+```
+typedef struct lval {
+  int type;
+  long num;
+  /* Error and Symbol types have some string data */
+  char* err;
+  char* sym;
+  /* Count and Pointer to a list of "lval*" */
+  int count;
+  struct lval** cell;
+} lval;
+```
