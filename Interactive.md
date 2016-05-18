@@ -15,7 +15,6 @@
 一旦获取到用户输入的字符串，就可以使用 `printf` 将它打印到命令行中。
 
 ```c
-
 #include <stdio.h>
 
 /* Declare a buffer for user input of size 2048 */
