@@ -63,9 +63,9 @@ Windows：
 
 `cc -std=c99 -Wall parsing.c mpc.c -o parsing`
 
-> 等一下，包含头文件难道不是用 `#include <mpc.h>`？
+> #### 等一下，包含头文件难道不是用 `#include <mpc.h>`？
 
-*事实上，在 C 语言中有两种包含头文件的方式，一种是用尖括号 `<>`，还有一种是用 `""` 双引号。通常，尖括号用来包含系统头文件如 `stdio.h`，双引号用来包含其他的头文件如 `mpc.h`。*
+> 事实上，在 C 语言中有两种包含头文件的方式，一种是用尖括号 `<>`，还有一种是用 `""` 双引号。通常，尖括号用来包含系统头文件如 `stdio.h`，双引号用来包含其他的头文件如 `mpc.h`。
 
 ## 波兰表达式语法解析
 
@@ -94,9 +94,9 @@ mpca_lang(MPCA_LANG_DEFAULT,
 /* Undefine and Delete our Parsers */
 mpc_cleanup(4, Number, Operator, Expr, Lispy);
 
-> 编译的时候得到一个错误：`undefined reference to 'mpc_lang'`
+> #### 编译的时候得到一个错误：`undefined reference to 'mpc_lang'`
 
-*注意函数的名字为 `mpca_lang`，`mpc` 后面有个 `a` 字母。*
+> 注意函数的名字为 `mpca_lang`，`mpc` 后面有个 `a` 字母。
 
 ## 解析用户输入
 
@@ -146,9 +146,9 @@ lispy> / 1dog
 lispy>
 ```
 
-> 编译的时候得到一个错误：`<stdin>:1:1: error: Parser Undefined!`
+> #### 编译的时候得到一个错误：`<stdin>:1:1: error: Parser Undefined!`
 
-*出现这个错误说明传给 `mpca_lang` 函数的语法规则存在错误，请仔细检查一下出错的地方。*
+> 出现这个错误说明传给 `mpca_lang` 函数的语法规则存在错误，请仔细检查一下出错的地方。
 
 ## 参考
 
