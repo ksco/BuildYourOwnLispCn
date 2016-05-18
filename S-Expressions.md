@@ -203,3 +203,66 @@ void lval_del(lval* v) {
   free(v);
 }
 ```
+
+## 读取表达式
+
+首先我们会读取整个程序，并构造一个 `lval*` 来表示它，然后我们对这个 `lval*` 进行遍历求值来得到程序的运行结果。第一阶段负责把抽象语法树(abstract syntax tree)转换为一个 S-表达式，第二阶段则根据我们已由的 Lisp 规则对 S-表达式进行遍历求值。
+
+为了完成第一步，我们可以递归的查看语法分析树中的每个节点，并根据节点的 `tag` 和 `contents` 字段构造出不同类型的 `lval*`。
+
+如果给定节点的被标记为 `number` 或 `symbol`，则我们可以调用对应的构造函数直接返回一个 `lval*`。如果给定的节点被标记为 `root` 或 `sexpr`，则我们应该构造一个空的 S-表达式类型的 `lval*`，并逐一将它的子节点加入。
+
+为了更加方便的像一个 S-表达式中添加元素，我们可以创建一个函数 `lval_add`，这个函数将表达式的子表达式计数加一，然后使用 `realloc` 函数为 `v->cell` 字段重新扩大申请内存，用于存储刚刚加入的子表达式 `lval* x`。
+
+<!--
+Don't Lisps use Cons cells?
+Other Lisps have a slightly different definition of what an S-Expression is. In most other Lisps S-Expressions are defined inductively as either an atom such as a symbol of number, or two other S-Expressions joined, or cons, together.
+This naturally leads to an implementation using linked lists, a different data structure to the one we are using. I choose to represent S-Expressions as a variable sized array in this book for the purposes of simplicity, but it is important to be aware that the official definition, and typical implementation are both subtly different.
+-->
+
+```c
+lval* lval_read_num(mpc_ast_t* t) {
+  errno = 0;
+  long x = strtol(t->contents, NULL, 10);
+  return errno != ERANGE ?
+    lval_num(x) : lval_err("invalid number");
+}
+```
+
+```c
+lval* lval_read(mpc_ast_t* t) {
+
+  /* If Symbol or Number return conversion to that type */
+  if (strstr(t->tag, "number")) { return lval_read_num(t); }
+  if (strstr(t->tag, "symbol")) { return lval_sym(t->contents); }
+
+  /* If root (>) or sexpr then create empty list */
+  lval* x = NULL;
+  if (strcmp(t->tag, ">") == 0) { x = lval_sexpr(); } 
+  if (strstr(t->tag, "sexpr"))  { x = lval_sexpr(); }
+
+  /* Fill this list with any valid expression contained within */
+  for (int i = 0; i < t->children_num; i++) {
+    if (strcmp(t->children[i]->contents, "(") == 0) { continue; }
+    if (strcmp(t->children[i]->contents, ")") == 0) { continue; }
+    if (strcmp(t->children[i]->contents, "}") == 0) { continue; }
+    if (strcmp(t->children[i]->contents, "{") == 0) { continue; }
+    if (strcmp(t->children[i]->tag,  "regex") == 0) { continue; }
+    x = lval_add(x, lval_read(t->children[i]));
+  }
+
+  return x;
+}
+```
+
+```c
+lval* lval_add(lval* v, lval* x) {
+  v->count++;
+  v->cell = realloc(v->cell, sizeof(lval*) * v->count);
+  v->cell[v->count-1] = x;
+  return v;
+}
+```
+
+## 打印表达式
+
