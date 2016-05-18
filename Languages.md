@@ -8,25 +8,25 @@
 
 举例来说：
 
-\> `The cat walked on the carpet.`
+> `The cat walked on the carpet.`
 
 根据英语的规则，名词 `cat` 可以被两个由 `and` 连接的名词代替：
 
-\> `The cat and dog walked on the carpet.`
+> `The cat and dog walked on the carpet.`
 
 我们可以像之前一样再次使用这个规则，将 `cat` 替换为两个使用 `and` 符号连接的新名词。我们还可以使用另外一个规则，将一个名词替换为一个形容词加一个名词，其中形容词作为对名词的修饰：
 
-\> `The cat and mouse and dog walked on the carpet.`
+> `The cat and mouse and dog walked on the carpet.`
 
-\> `The white cat and black dog walked on the carpet.`
+> `The white cat and black dog walked on the carpet.`
 
 以上，我们只是简单的举两个例子。英语的语法规则远不止于此，汉语的语法规则就更复杂了，呵呵。
 
 我们注意到，在编程语言中也有相似的规则。在 C 语言中，`if` 语句可以包含多条的新语句，新语句当然也可以是另一个 `if`语句。这些递归和重复的规则在语言的其他部分也同样是适用的。
 
-\> `if (x > 5) { return x; }`
+> `if (x > 5) { return x; }`
 
-\> `if (x > 5) { if (x > 10) { return x; } }`
+> `if (x > 5) { if (x > 10) { return x; } }`
 
 Chomsky 提出的理论是非常重要的。它意味着，虽然一门语言可以表达无限的内容，我们仍然可以使用有限的规则去解析所有用该门语言写就的东西。这些有限的规则就叫语法(grammar)。
 
@@ -79,9 +79,9 @@ mpc_parser_t* Noun = mpc_or(5,
 );
 ```
 
-> 我怎样才能使用上面的这些 `mpc` 库提供的函数？
+> #### 我怎样才能使用上面的这些 `mpc` 库提供的函数？
 
-*现在先不用担心编译和运行程序的事情，先确保理解背后的理论知识。在下一章中我们将使用使用`mpc` 实现一个更加接近我们的 Lisp 的语言。*
+> 现在先不用担心编译和运行程序的事情，先确保理解背后的理论知识。在下一章中我们将使用使用`mpc` 实现一个更加接近我们的 Lisp 的语言。
 
 接下来，我们使用已经定义好的解析器 `Adjective` 、 `Noun` 来定义短语(`Phrase`)解析器。`mpc_and` 函数返回的解析器可接受的语句必须是各个语句按照顺序出现。所以我们将先前定义的 `Adjective` 和 `Noun` 传递给它，表示形容词后面紧跟名词组成短语。`mpcf_strfold` 和 `free` 指定了各个语句的组织及删除方式，我们可以暂时忽略它们。
 
@@ -156,9 +156,9 @@ mpc_cleanup(4, Adjective, Noun, Phrase, Doge);
 | `'a'+` | 要求有 1 个或多个字符 `a` |
 | `<abba>` | 要求满足名为 `abba` 定义的语法规则 |
 
-> 似曾相识的感觉？
+> #### 似曾相识的感觉？
 
-*上面的一些语法规则有没有似曾相识的感觉？你没有猜错，`mpca_lang` 函数就是用 `mpc_many`、`mpc_and` 、 `mpc_or` 这些函数来实现的，干净利落，不拖泥带水。*
+> 上面的一些语法规则有没有似曾相识的感觉？你没有猜错，`mpca_lang` 函数就是用 `mpc_many`、`mpc_and` 、 `mpc_or` 这些函数来实现的，干净利落，不拖泥带水。
 
 根据表中给出的规则尝试着理解一下上面的代码，看看是不是等价于之前我们前面用代码定义过的语法解析器？
 
