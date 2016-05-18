@@ -24,7 +24,7 @@ C 语言有很多种错误处理方式，但针对当前的项目，我更加倾
 
 结构体名为 `lval`，取义 *Lisp Value*，定义如下：
 
-```
+```c
 /* Declare New lval Struct */
 typedef struct {
   int type;
@@ -48,7 +48,7 @@ typedef struct {
 
 C 语言为此提供了语言特性上的支持——枚举(`enum`)。
 
-```
+```c
 /* Create Enumeration of Possible lval Types */
 enum { LVAL_NUM, LVAL_ERR };
 ```
@@ -57,7 +57,7 @@ enum { LVAL_NUM, LVAL_ERR };
 
 另外，我们还需要为 `error` 字段也声明一些枚举值。目前，我们需要声明三种类型的错误，包括：除数为零、操作符未知、操作数过大。代码如下：
 
-```
+```c
 /* Create Enumeration of Possible Error Types */
 enum { LERR_DIV_ZERO, LERR_BAD_OP, LERR_BAD_NUM };
 ```
@@ -66,7 +66,7 @@ enum { LERR_DIV_ZERO, LERR_BAD_OP, LERR_BAD_NUM };
 
 我们的 `lval` 类型已经跃跃欲试了，但我们没有方法能创建新的实例。所以我们定义了两个函数来完成这项任务：
 
-```
+```c
 /* Create a new number type lval */
 lval lval_num(long x) {
   lval v;
@@ -88,7 +88,7 @@ lval lval_err(int x) {
 
 利用 `switch`，我们就可以轻松完成需求了：
 
-```
+```c
 /* Print an "lval" */
 void lval_print(lval v) {
   switch (v.type) {
@@ -124,7 +124,7 @@ void lval_println(lval v) { lval_print(v); putchar('\n'); }
 
 在 `eval_op` 函数中，如果检测到错误，函数应该立即返回，当且仅当两个操作数都为数字类型时才做计算。另外，对于本章开头的除数为零的错误，也应该返回错误信息。
 
-```
+```c
 lval eval_op(lval x, char* op, lval y) {
 
   /* If either value is an error return it */
@@ -150,7 +150,7 @@ lval eval_op(lval x, char* op, lval y) {
 
 新代码中，我们选用 `strtol` 函数进行字符串到数字的转换，因为可以通过检测 `errno` 变量确定是否转换成功。这无疑比使用 `atoi` 函数更为明智。
 
-```
+```c
 lval eval(mpc_ast_t* t) {
   
   if (strstr(t->tag, "number")) {
@@ -175,7 +175,7 @@ lval eval(mpc_ast_t* t) {
 
 最后的一小步！使用新定义的打印函数：
 
-```
+```c
 lval result = eval(r.output);
 lval_println(result);
 mpc_ast_delete(r.output);
@@ -192,9 +192,9 @@ lispy> / 10 2
 
 ## 参考
 
-`error_handling.c`
+**error_handling.c**
 
-```
+```c
 #include "mpc.h"
 
 #ifdef _WIN32
