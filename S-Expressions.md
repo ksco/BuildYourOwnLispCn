@@ -60,7 +60,7 @@ Lisp 程序代码与数据的形式完全相同，这使得它非常强大，能
 
 因为现在我们考虑的是 S-表达式，而不是之前的波兰表达式了，我们需要更新一下语法分析器。S-表达式的语法非常简单。只是小括号之间包含一组表达式而已。而这些表达式可以是数字、操作符或是其他的 S-表达式。只需修改一下之前写的就可以了。另外，我们还需把 `operator` 规则重命名为 `symbol`。为之后添加更多的操作符以及变量、函数等做准备。
 
-```
+```c
 mpc_parser_t* Number = mpc_new("number");
 mpc_parser_t* Symbol = mpc_new("symbol");
 mpc_parser_t* Sexpr  = mpc_new("sexpr");
@@ -80,7 +80,7 @@ mpca_lang(MPCA_LANG_DEFAULT,
 
 同时，还要记得在退出之前做好清理工作：
 
-```
+```c
 mpc_cleanup(5, Number, Symbol, Sexpr, Expr, Lispy);
 ```
 
@@ -88,7 +88,7 @@ mpc_cleanup(5, Number, Symbol, Sexpr, Expr, Lispy);
 
 首先，我们需要让 `lval` 能够存储 S-表达式。这意味着我们还要能存储符号(Symbols)和数字。我们向枚举中添加两个新的类型。`LVAL_SYM` 表示操作符类型，例如 `+` 等，`LVAL_SEXPR` 表示 S-表达式。
 
-```
+```c
 enum { LVAL_ERR, LVAL_NUM, LVAL_SYM, LVAL_SEXPR };
 ```
 
@@ -96,7 +96,7 @@ S-表达式是一个可变长度的列表。在本章的开头已经提到，我
 
 我们使用字符串来表示符号(Symbols)，另外我们还增加了另一个字符串用来存储错误信息。也就是说现在 `lval` 可以存储更加具体的错误信息了，而不只是一个错误代码，这使得我们的错误报告系统更加灵活好用。我们也可以删除掉之前写的错误枚举了。升级过后的 `lval` 结构体如下所示：
 
-```
+```c
 typedef struct lval {
   int type;
   long num;
@@ -109,11 +109,12 @@ typedef struct lval {
 } lval;
 ```
 
-> **有指向指向指针的指针的指针吗？**
+> #### 有指向指向指针的指针的指针吗？
 
-> 这里有个古老的笑话，说是可以根据 C 程序员的程序中指针后面的星星数(`*`)作为其水平的评分。
+> 这里有个古老的笑话，说是可以根据 C 程序员的程序中指针后面的星星数(`*`)作为其水平的评分。:P
 
-> 初级水平的人写的程序可能只会用到像 `char*`、奇怪的 `int*` 等指针，所以他们被称为一星程序员。而大多数中级的程序员则会用到诸如 `lval**` 这类的二级指针，所以他们被称为二星程序员。但三级指针就真的很少见了，你可能会在一些伟大的作品中见到，这些代码的妙处凡夫俗子自然也是体会不到的。果真如此，三星程序员真是极大的赞誉了。
+> 初级水平的人写的程序可能只会用到像 `char*` 或是奇怪的 `int*` 等一级指针，所以他们被称为一星程序员。而大多数中级的程序员则会用到诸如 `lval**` 这类的二级指针，所以他们被称为二星程序员。但据说能用三级指针的就真的很少见了，你可能会在一些伟大的作品中见到，这些代码的妙处凡夫俗子自然也是体会不到的。果真如此，三星程序员这个称号真是极大的赞誉了。
+> 
 > 但据我所知，还没有人用到过四级指针。
 
 ## 构造函数和析构函数
@@ -122,7 +123,7 @@ typedef struct lval {
 
 当我们构造一个 `lval` 时，它的某些指针字段可能会包含其他的在堆上申请的内存，所以我们应该小心行事。当某个 ｀lval｀ 完成使命之后，我们不仅需要删除它本身所指向的堆内存，还要删除它的字段所指向的堆内存。
 
-```
+```c
 /* Construct a pointer to a new Number lval */ 
 lval* lval_num(long x) {
   lval* v = malloc(sizeof(lval));
@@ -132,7 +133,7 @@ lval* lval_num(long x) {
 }
 ```
 
-```
+```c
 /* Construct a pointer to a new Error lval */ 
 lval* lval_err(char* m) {
   lval* v = malloc(sizeof(lval));
@@ -143,7 +144,7 @@ lval* lval_err(char* m) {
 }
 ```
 
-```
+```c
 /* Construct a pointer to a new Symbol lval */ 
 lval* lval_sym(char* s) {
   lval* v = malloc(sizeof(lval));
@@ -154,7 +155,7 @@ lval* lval_sym(char* s) {
 }
 ```
 
-```
+```c
 /* A pointer to a new empty Sexpr lval */
 lval* lval_sexpr(void) {
   lval* v = malloc(sizeof(lval));
@@ -165,6 +166,40 @@ lval* lval_sexpr(void) {
 }
 ```
 
-> `NULL` 是什么？
+> #### `NULL` 是什么？
 
 > `NULL` 是一个指向内存地址 0 的特殊常量。按照惯例，它通常被用来表示空值或无数据。在上面的代码中，我们使用 `NULL` 来表示虽然我们有一个数据指针，但它目前还没有指向任何内容。在本书的后续章节中你讲经常性地遇到这个特殊的常量，所以，请眼熟它。
+
+---
+
+> #### 为什么要使用 `strlen(s) + 1`？
+
+> 在 C 语言中，字符串是以空字符做为终止标记的。所以，C 语言字符串的最后一个字符一定是 `\0`。请确保所有的字符串都是按照这个约定来存储的，不然程序就会因为莫名其妙的错误退出。`strlen` 函数返回的是字符串的实际长度(所以不包括结尾的 `\0` 终止符)。所以为了保证有足够的空间存储所有字符，我们需要在额外 +1。
+
+现在，我们需要一个定制的函数来删除 `lval*`。这个函数应该调用 `free` 函数来释放本身所指向的由 `malloc` 函数所申请的内存。但更重要的是，它应该根据自身的类型，释放所有它的字段指向的内存。所以我们只需按照上方介绍的那些构造函数对应释放相应的字段，就不会有内存的泄露了。
+
+```c
+void lval_del(lval* v) {
+
+  switch (v->type) {
+    /* Do nothing special for number type */
+    case LVAL_NUM: break;
+
+    /* For Err or Sym free the string data */
+    case LVAL_ERR: free(v->err); break;
+    case LVAL_SYM: free(v->sym); break;
+
+    /* If Sexpr then delete all elements inside */
+    case LVAL_SEXPR:
+      for (int i = 0; i < v->count; i++) {
+        lval_del(v->cell[i]);
+      }
+      /* Also free the memory allocated to contain the pointers */
+      free(v->cell);
+    break;
+  }
+
+  /* Free the memory allocated for the "lval" struct itself */
+  free(v);
+}
+```
