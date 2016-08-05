@@ -121,7 +121,7 @@ typedef struct lval {
 
 我们可以重写 `lval` 的构造函数，使其返回 `lval` 的指针，而不是其本身。这样做会使得对 `lval` 变量进行跟踪更加简单。为此，我们需要用到 `malloc` 库函数以及 `sizeof` 操作符为 `lval` 结构体在堆上申请足够大的内存区域，然后使用 `->` 操作符填充结构体中的相关字段。
 
-当我们构造一个 `lval` 时，它的某些指针字段可能会包含其他的在堆上申请的内存，所以我们应该小心行事。当某个 ｀lval｀ 完成使命之后，我们不仅需要删除它本身所指向的堆内存，还要删除它的字段所指向的堆内存。
+当我们构造一个 `lval` 时，它的某些指针字段可能会包含其他的在堆上申请的内存，所以我们应该小心行事。当某个 `lval` 完成使命之后，我们不仅需要删除它本身所指向的堆内存，还要删除它的字段所指向的堆内存。
 
 ```c
 /* Construct a pointer to a new Number lval */ 
@@ -265,4 +265,64 @@ lval* lval_add(lval* v, lval* x) {
 ```
 
 ## 打印表达式
+
+距离验证本章做的所有改变只有一步之遥了！我们还需要修改打印函数使其能够打印出 S-表达式。通过将 S-表达式打印出来和输入对比可以进一步检查读入模块是否正确工作。
+
+为了打印 S-表达式，我们创建一个新函数，遍历所有的子表达式，并将它们单独打印出来，以空格隔开，正如输入的时候一样。
+
+```c
+void lval_expr_print(lval* v, char open, char close) {
+  putchar(open);
+  for (int i = 0; i < v->count; i++) {
+
+    /* Print Value contained within */
+    lval_print(v->cell[i]);
+
+    /* Don't print trailing space if last element */
+    if (i != (v->count-1)) {
+      putchar(' ');
+    }
+  }
+  putchar(close);
+}
+```
+
+```c
+void lval_print(lval* v) {
+  switch (v->type) {
+    case LVAL_NUM:   printf("%li", v->num); break;
+    case LVAL_ERR:   printf("Error: %s", v->err); break;
+    case LVAL_SYM:   printf("%s", v->sym); break;
+    case LVAL_SEXPR: lval_expr_print(v, '(', ')'); break;
+  }
+}
+
+void lval_println(lval* v) { lval_print(v); putchar('\n'); }
+```
+
+> #### 我没法声明这些函数，因为它们互相调用了对方。
+
+> `lval_expr_print` 函数内部调用了 `lval_print` 函数，`lval_print` 内部又调用了 `lval_expr_print`。似乎是没有办法解决依赖性的。C 语言提供了*前置声明*来解决这个问题。前置声明只定义了函数的形式，而没有函数体(译者注：前置声明就是告诉编译器：“我保证有这个函数，你放心调用就是了”)。它允许其他函数调用它，而具体的函数定义则在后面。函数声明只要将函数定义的函数体换成 `;` 即可。在我们的程序中，应该将 `void lval_print(lval* v);` 语句放在一个比 `lval_expr_print`  函数靠前的地方。在以后的编程过程中，你一定会再次遇到这个问题，所以请记住这个解决方案！
+
+在主循环中，我们可以将求值部分移除了，替换为新写就的读取和打印函数。
+
+```c
+lval* x = lval_read(r.output);
+lval_println(x);
+lval_del(x);
+```
+
+正常情况下，你应该可以看到下面这样的结果。
+
+```c
+lispy> + 2 2
+(+ 2 2)
+lispy> + 2 (* 7 6) (* 2 5)
+(+ 2 (* 7 6) (* 2 5))
+lispy> *     55     101  (+ 0 0 0)
+(* 55 101 (+ 0 0 0))
+lispy>
+```
+
+## 表达式求值
 
