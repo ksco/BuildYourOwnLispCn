@@ -326,3 +326,57 @@ lispy>
 
 ## 表达式求值
 
+求值函数的具体行为和之前的并无太大变化。我们需要将其适配本章定义的 `lval*` 以及更加灵活的表达式定义。其实可以把求值函数想象成某种转换器－－它读取 `lval*` 作为输入，通过某种方式将其转化为新的 `lval*` 并输出。在有些时候，求值函数不对输入做任何修改，原封不动的将其返回；在有些时候，它会对输入的做一些改动；而在大多数情况下，它会将输入的 `lval*` 删除，返回完全不同的东西。如果要返回新的东西，一定要记得将作为输入的 `lval*` 删除。
+
+对于 S-表达式，我们首先遍历它所有的字节点，如果子节点有任何错误，我们就使用稍后定义的函数 `lval_take` 将遇到的第一个错误返回。
+
+对于没有子节点的 S-表达式直接将其返回就可以了，这是为了处理空表达式 `{}` 的情况。另外，我们还需要检查只有一个子节点的表达式，例如 `{5}`，这种情况我们应该将其包含的表达式返回。
+
+如果以上情况都不成立，那我们就知道这是一个合法的表达式，有个多于一个的子节点。对于此种情况，我们使用稍后定义的函数 `lval_pop` 将第一个元素从表达式中分离开来，然后检查确保它是一个 `symbol`。然后根据它的具体类型，将它和参数一起传入 `builtin_op` 函数计算求值。如果它不是 `symbol`，我们就将它以及传进来的其它参数删除，然后返回一个错误。
+
+对于其它的非 S-表达式类型，我们就直接将其返回。
+
+```c
+lval* lval_eval_sexpr(lval* v) {
+
+  /* Evaluate Children */
+  for (int i = 0; i < v->count; i++) {
+    v->cell[i] = lval_eval(v->cell[i]);
+  }
+
+  /* Error Checking */
+  for (int i = 0; i < v->count; i++) {
+    if (v->cell[i]->type == LVAL_ERR) { return lval_take(v, i); }
+  }
+
+  /* Empty Expression */
+  if (v->count == 0) { return v; }
+
+  /* Single Expression */
+  if (v->count == 1) { return lval_take(v, 0); }
+
+  /* Ensure First Element is Symbol */
+  lval* f = lval_pop(v, 0);
+  if (f->type != LVAL_SYM) {
+    lval_del(f); lval_del(v);
+    return lval_err("S-expression Does not start with symbol!");
+  }
+
+  /* Call builtin with operator */
+  lval* result = builtin_op(v, f->sym);
+  lval_del(f);
+  return result;
+}
+```
+
+```c
+lval* lval_eval(lval* v) {
+  /* Evaluate Sexpressions */
+  if (v->type == LVAL_SEXPR) { return lval_eval_sexpr(v); }
+  /* All other lval types remain the same */
+  return v;
+}
+```
+
+上面的代码中用到了两个我们还没有定义的函数：`lval_pop` 和 `lval_take`。这两个都是用于操作 `lval` 类型的通用型函数，我们在本章和之后的章节中都会用到。
+
