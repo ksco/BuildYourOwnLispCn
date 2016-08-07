@@ -410,7 +410,7 @@ lval* lval_take(lval* v, int i) {
 }
 ```
 
-We also need to define the evaluation function builtin_op. This is like the eval_op function used in our previous chapter but modified to take a single lval* representing a list of all the arguments to operate on. It needs to do some more rigorous error checking. If any of the inputs are a non-number lval* we need to return an error.
+我们还需要定义求值函数 `builtin_op`，它和我们在之前章节定义的 `eval_op` 函数类似，改成了接受一个 `lval*` 来代表一系列的参数。该函数应该对参数做更加严格的检查，如果有任何参数不是数字类型的 `lval*`，都应该返回一个错误。
 
 First it checks that all the arguments input are numbers. It then pops the first argument to start. If there are no more sub-expressions and the operator is subtraction it performs unary negation on this first number. This makes expressions such as (- 5) evaluate correctly.
 
