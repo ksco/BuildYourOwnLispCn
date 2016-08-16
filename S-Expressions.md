@@ -412,11 +412,11 @@ lval* lval_take(lval* v, int i) {
 
 我们还需要定义求值函数 `builtin_op`，它和我们在之前章节定义的 `eval_op` 函数类似，改成了接受一个 `lval*` 来代表一系列的参数。该函数应该对参数做更加严格的检查，如果有任何参数不是数字类型的 `lval*`，都应该返回一个错误。
 
-First it checks that all the arguments input are numbers. It then pops the first argument to start. If there are no more sub-expressions and the operator is subtraction it performs unary negation on this first number. This makes expressions such as (- 5) evaluate correctly.
+首先，它确保所有的输入参数的类型都为数字。然后将第一个数字弹出开始计算。如果后面没有其它的子表达式，并且操作符为减号时，它会对第一个数字进行取反操作。这确保了类似于 (- 5) 这种表达式能够正确工作。
 
-If there are more arguments it constantly pops the next one from the list and performs arithmetic depending on which operator we're meant to be using. If a zero is encountered on division it deletes the temporary x, y, and the argument list a, and returns an error.
+如果还有更多的参数，它就不断地从列表中取出，将其和之前的计算结果一起进行相应的数学运算。如果做除法时遇到被除数为零的情况，就将临时变量 x 和 y 以及参数列表删除，并返回一个错误。
 
-If there have been no errors the input arguments are deleted and the new expression returned.
+如果没有错误，参数列表最终会被删除，并返回一个新的表达式。
 
 ```c
 lval* builtin_op(lval* a, char* op) {
@@ -461,7 +461,7 @@ lval* builtin_op(lval* a, char* op) {
 }
 ```
 
-This completes our evaluation functions. We just need to change main again so it passes the input through this evaluation before printing it.
+到此我们的求值函数就完成了。我们只需要再次更新一下 main 函数，在其打印表达式之前，先将输入经由求值函数处理即可。
 
 ```c
 lval* x = lval_eval(lval_read(r.output));
@@ -470,6 +470,8 @@ lval_del(x);
 ```
 
 Now you should now be able to evaluate expressions correctly in the same way as in the previous chapter. Take a little breather and have a play around with the new evaluation. Make sure everything is working correctly, and the behaviour is as expected. In the next chapter we're going to make great use of these changes to implement some cool new features.
+
+现在，你应该可以向上一章一样，正确地对表达式进行求值了。稍作休息，尝试一下新的求值过程。确保能够正常运行，运行结果正确。在下一章，我们将充分利用本章做出的改变，实现一些更加酷炫的特性。
 
 ```c
 lispy> + 1 (* 7 5) 3
