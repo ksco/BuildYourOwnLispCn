@@ -16,3 +16,38 @@
 本章我们将实现一个新的 Lisp 值类型，叫做 Q-表达式。
 
 它的英文全称为 *quoted expression*，跟 S-表达式一样，也是 Lisp 表达式的一种，但它不受标准 Lisp 求值机制的作用。也就是说，当受到函数的作用时，Q-表达式不会被求值，而是保持原样。这个特性让 Q-表达式有着广泛的应用。我们可以用它来存储和管理其他的 Lisp 值类型，例如数字、符号或 S-表达式等。
+
+在添加 Q-表达式之后，我们还需要定义一系列的操作来管理它。类似于数学操作，这些操作定义了 Q-表达式具体的行为。
+
+Q- 表达式的语法和 S-表达式非常相似，唯一的不同是 Q-表达式包裹在大括号 `{}` 中，而非 S-表达式的小括号 `()`，Q-表达式的语法规则如下所示。
+
+> #### 我从来没听说过 Q-表达式
+> 好吧，其实 Q-表达式不存在于其它的 Lisp 方言中。它们通常使用宏来禁止表达式求值。它们看起来类似于普通的函数，但不会对参数进行求值。有一个特殊叫做引用(`'`)的宏，可以用来禁止几乎所有表达式的求值，这个宏也是 S-表达式的灵感来源。所以 S-表达式是 Lispy 独有的，我们用它来替代宏完成任务。
+> 
+>  本书中的 S-表达式和 Q-表达式有滥用概念的嫌疑，但我希望这些“不恰当的行为”能够使我们的 Lispy 的行为更加清晰简洁。
+
+```c
+mpc_parser_t* Number = mpc_new("number");
+mpc_parser_t* Symbol = mpc_new("symbol");
+mpc_parser_t* Sexpr  = mpc_new("sexpr");
+mpc_parser_t* Qexpr  = mpc_new("qexpr");
+mpc_parser_t* Expr   = mpc_new("expr");
+mpc_parser_t* Lispy  = mpc_new("lispy");
+
+mpca_lang(MPCA_LANG_DEFAULT,
+  "                                                    \
+    number : /-?[0-9]+/ ;                              \
+    symbol : '+' | '-' | '*' | '/' ;                   \
+    sexpr  : '(' <expr>* ')' ;                         \
+    qexpr  : '{' <expr>* '}' ;                         \
+    expr   : <number> | <symbol> | <sexpr> | <qexpr> ; \
+    lispy  : /^/ <expr>* /$/ ;                         \
+  ",
+  Number, Symbol, Sexpr, Qexpr, Expr, Lispy);
+```
+
+另外，不要忘记同步更新清理函数 `mpc_cleanup` 来处理我们新添加的规则。
+
+```c
+mpc_cleanup(6, Number, Symbol, Sexpr, Qexpr, Expr, Lispy);
+```
