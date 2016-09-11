@@ -469,8 +469,6 @@ lval_println(x);
 lval_del(x);
 ```
 
-Now you should now be able to evaluate expressions correctly in the same way as in the previous chapter. Take a little breather and have a play around with the new evaluation. Make sure everything is working correctly, and the behaviour is as expected. In the next chapter we're going to make great use of these changes to implement some cool new features.
-
 现在，你应该可以向上一章一样，正确地对表达式进行求值了。稍作休息，尝试一下新的求值过程。确保能够正常运行，运行结果正确。在下一章，我们将充分利用本章做出的改变，实现一些更加酷炫的特性。
 
 ```c
