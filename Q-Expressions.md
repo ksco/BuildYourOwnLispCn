@@ -51,3 +51,61 @@ mpca_lang(MPCA_LANG_DEFAULT,
 ```c
 mpc_cleanup(6, Number, Symbol, Sexpr, Qexpr, Expr, Lispy);
 ```
+
+## 读取 Q-表达式
+
+由于 Q-表达式和 S-表达式的形式基本一致，所以它们内部实现也大致是相同的。我们考虑重用 S-表达式的数据结构来表示 Q-表达式，在此之前需要向枚举中添加一个单独的类型。
+
+```c
+enum { LVAL_ERR, LVAL_NUM, LVAL_SYM, LVAL_SEXPR, LVAL_QEXPR };
+```
+另外，还需为其编写一个构造函数。
+
+```c
+/* A pointer to a new empty Qexpr lval */
+lval* lval_qexpr(void) {
+  lval* v = malloc(sizeof(lval));
+  v->type = LVAL_QEXPR;
+  v->count = 0;
+  v->cell = NULL;
+  return v;
+}
+```
+
+Q-表达式的打印和删除逻辑也和 S-表达式别无二致，我们只需照葫芦画瓢，在相应的函数中添加对应的逻辑即可，具体如下所示。
+
+```c
+void lval_print(lval* v) {
+  switch (v->type) {
+    case LVAL_NUM:   printf("%li", v->num); break;
+    case LVAL_ERR:   printf("Error: %s", v->err); break;
+    case LVAL_SYM:   printf("%s", v->sym); break;
+    case LVAL_SEXPR: lval_expr_print(v, '(', ')'); break;
+    case LVAL_QEXPR: lval_expr_print(v, '{', '}'); break;
+  }
+}
+```
+
+```c
+void lval_del(lval* v) {
+
+  switch (v->type) {
+    case LVAL_NUM: break;
+    case LVAL_ERR: free(v->err); break;
+    case LVAL_SYM: free(v->sym); break;
+
+    /* If Qexpr or Sexpr then delete all elements inside */
+    case LVAL_QEXPR:
+    case LVAL_SEXPR:
+      for (int i = 0; i < v->count; i++) {
+        lval_del(v->cell[i]);
+      }
+      /* Also free the memory allocated to contain the pointers */
+      free(v->cell);
+    break;
+  }
+
+  free(v);
+}
+```
+
